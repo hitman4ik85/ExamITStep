@@ -1,0 +1,56 @@
+.articles-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    table-layout: auto;
+}
+
+.articles-table th,
+.articles-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    vertical-align: top;
+}
+
+.articles-table th {
+    background-color: #f8f8f8;
+    text-align: left;
+}
+
+.col-date,
+.col-actions {
+    white-space: nowrap;
+    width: 1%;
+}
+
+.col-title {
+    width: auto;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.articles-link {
+    color: #1677ff;
+    text-decoration: underline;
+}
+
+.articles-link:hover {
+    color: #0958d9;
+}
+
+.row-icon {
+    cursor: pointer;
+    font-size: 18px;
+    margin-right: 10px;
+    color: #1677ff;
+    vertical-align: middle;
+}
+
+.row-icon:hover {
+    color: #0958d9;
+}
+
+.row-icon.danger {
+    color: #cf1322;
+}
+

@@ -1,0 +1,15 @@
+{
+  "exclude": [
+    "**/bin",
+    "**/bower_components",
+    "**/jspm_packages",
+    "**/node_modules",
+    "**/obj",
+    "**/platforms"
+  ],
+  "AzureConnString": "DefaultEndpointsProtocol=https;AccountName=hitok;AccountKey=REPLACE_WITH_YOUR_AZURE_KEY;EndpointSuffix=core.windows.net",
+  "QueueName": "examqueue",
+  "AccountKey": "REPLACE_WITH_YOUR_AZURE_KEY",
+  "BlobConnString": "DefaultEndpointsProtocol=https;AccountName=hitok;AccountKey=REPLACE_WITH_YOUR_AZURE_KEY;EndpointSuffix=core.windows.net",
+  "BlobContainer": "examlogs"
+}

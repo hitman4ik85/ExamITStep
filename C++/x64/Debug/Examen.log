@@ -1,0 +1,4 @@
+﻿  Examen.cpp
+D:\IT Step Shag\PK Kurs\C++\Examen\Examen\Examen\Examen.cpp(521,28): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+D:\IT Step Shag\PK Kurs\C++\Examen\Examen\Examen\Examen.cpp(525,28): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+  Examen.vcxproj -> D:\IT Step Shag\PK Kurs\C++\Examen\Examen\x64\Debug\Examen.exe

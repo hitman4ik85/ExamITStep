@@ -1,0 +1,3233 @@
+AdminLoginForm.cs --- 
+
+using System;
+using System.IO;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class AdminLoginForm : Form
+    {
+        private const string AdminFilePath = "admin.txt";
+
+        public AdminLoginForm()
+        {
+            InitializeComponent();
+            EnsureAdminFileExists();
+            this.KeyPreview = true; // Дозволяє обробляти натискання клавіш для всієї форми
+            this.KeyDown += AdminLoginForm_KeyDown; // Додаємо обробник для клавіш
+
+            // Додаємо підказки до текстових полів
+            AddToolTips();
+        }
+
+        private void EnsureAdminFileExists()
+        {
+            if (!File.Exists(AdminFilePath))
+            {
+                File.WriteAllText(AdminFilePath, "Login: admin\nPassword: admin");
+            }
+        }
+
+        private void AddToolTips()
+        {
+            var toolTip = new ToolTip();
+            toolTip.SetToolTip(txtUsername, "За замовчуванням Логін: admin");
+            toolTip.SetToolTip(txtPassword, "За замовчуванням Пароль: admin");
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            string username = txtUsername.Text;
+            string password = txtPassword.Text;
+
+            try
+            {
+                if (File.Exists(AdminFilePath))
+                {
+                    var adminData = File.ReadAllLines(AdminFilePath);
+                    if (adminData.Length < 2)
+                    {
+                        MessageBox.Show("Файл даних адміністратора пошкоджений!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    string savedUsername = adminData[0].Split(':')[1].Trim();
+                    string savedPassword = adminData[1].Split(':')[1].Trim();
+
+                    if (username == savedUsername && password == savedPassword)
+                    {
+                        AdminMenuForm adminMenu = new AdminMenuForm();
+                        adminMenu.ShowDialog();
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Невірний логін або пароль!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Файл адміністратора не знайдено!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Виникла помилка: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void AdminLoginForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnLogin_Click(sender, e);
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                btnCancel_Click(sender, e);
+            }
+        }
+    }
+}
+
+AdminLoginForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class AdminLoginForm
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            this.txtUsername = new System.Windows.Forms.TextBox();
+            this.txtPassword = new System.Windows.Forms.TextBox();
+            this.btnLogin = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // txtUsername
+            // 
+            this.txtUsername.Location = new System.Drawing.Point(50, 50);
+            this.txtUsername.Name = "txtUsername";
+            this.txtUsername.PlaceholderText = "Логін";
+            this.txtUsername.Size = new System.Drawing.Size(200, 27);
+            this.txtUsername.TabIndex = 0;
+            // 
+            // txtPassword
+            // 
+            this.txtPassword.Location = new System.Drawing.Point(50, 100);
+            this.txtPassword.Name = "txtPassword";
+            this.txtPassword.PasswordChar = '*';
+            this.txtPassword.PlaceholderText = "Пароль";
+            this.txtPassword.Size = new System.Drawing.Size(200, 27);
+            this.txtPassword.TabIndex = 1;
+            // 
+            // btnLogin
+            // 
+            this.btnLogin.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.btnLogin.ForeColor = System.Drawing.Color.White;
+            this.btnLogin.Location = new System.Drawing.Point(50, 150);
+            this.btnLogin.Name = "btnLogin";
+            this.btnLogin.Size = new System.Drawing.Size(100, 40);
+            this.btnLogin.TabIndex = 2;
+            this.btnLogin.Text = "Увійти";
+            this.btnLogin.UseVisualStyleBackColor = false;
+            this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.BackColor = System.Drawing.Color.Crimson;
+            this.btnCancel.ForeColor = System.Drawing.Color.White;
+            this.btnCancel.Location = new System.Drawing.Point(150, 150);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(100, 40);
+            this.btnCancel.TabIndex = 3;
+            this.btnCancel.Text = "Скасувати";
+            this.btnCancel.UseVisualStyleBackColor = false;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // AdminLoginForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(300, 250);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnLogin);
+            this.Controls.Add(this.txtPassword);
+            this.Controls.Add(this.txtUsername);
+            this.Name = "AdminLoginForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Вхід адміністратора";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        private System.Windows.Forms.TextBox txtUsername;
+        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.Button btnLogin;
+        private System.Windows.Forms.Button btnCancel;
+    }
+}
+
+AdminMenuForm.cs --- 
+
+using System;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class AdminMenuForm : Form
+    {
+        public AdminMenuForm()
+        {
+            InitializeComponent();
+            SetBackgroundImage();
+        }
+
+        private void SetBackgroundImage()
+        {
+            try
+            {
+                this.BackgroundImage = Image.FromFile("Resources/admin_menu.jpg");
+                this.BackgroundImageLayout = ImageLayout.Stretch;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження фону: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnViewPlayers_Click(object sender, EventArgs e)
+        {
+            PlayerManagementForm playerManagement = new PlayerManagementForm();
+            playerManagement.ShowDialog();
+        }
+
+        private void btnChangeAdminCredentials_Click(object sender, EventArgs e)
+        {
+            ChangeAdminCredentialsForm changeAdminCredentials = new ChangeAdminCredentialsForm();
+            changeAdminCredentials.ShowDialog();
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}
+
+AdminMenuForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class AdminMenuForm
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            this.btnViewPlayers = new System.Windows.Forms.Button();
+            this.btnChangeAdminCredentials = new System.Windows.Forms.Button();
+            this.btnExit = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // btnViewPlayers
+            // 
+            this.btnViewPlayers.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.btnViewPlayers.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnViewPlayers.ForeColor = System.Drawing.Color.White;
+            this.btnViewPlayers.Location = new System.Drawing.Point(100, 50);
+            this.btnViewPlayers.Name = "btnViewPlayers";
+            this.btnViewPlayers.Size = new System.Drawing.Size(200, 50);
+            this.btnViewPlayers.TabIndex = 0;
+            this.btnViewPlayers.Text = "Перегляд гравців";
+            this.btnViewPlayers.UseVisualStyleBackColor = false;
+            this.btnViewPlayers.Click += new System.EventHandler(this.btnViewPlayers_Click);
+            // 
+            // btnChangeAdminCredentials
+            // 
+            this.btnChangeAdminCredentials.BackColor = System.Drawing.Color.MediumPurple;
+            this.btnChangeAdminCredentials.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnChangeAdminCredentials.ForeColor = System.Drawing.Color.White;
+            this.btnChangeAdminCredentials.Location = new System.Drawing.Point(100, 150);
+            this.btnChangeAdminCredentials.Name = "btnChangeAdminCredentials";
+            this.btnChangeAdminCredentials.Size = new System.Drawing.Size(200, 50);
+            this.btnChangeAdminCredentials.TabIndex = 1;
+            this.btnChangeAdminCredentials.Text = "Змінити логін/пароль";
+            this.btnChangeAdminCredentials.UseVisualStyleBackColor = false;
+            this.btnChangeAdminCredentials.Click += new System.EventHandler(this.btnChangeAdminCredentials_Click);
+            // 
+            // btnExit
+            // 
+            this.btnExit.BackColor = System.Drawing.Color.Crimson;
+            this.btnExit.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnExit.ForeColor = System.Drawing.Color.White;
+            this.btnExit.Location = new System.Drawing.Point(100, 250);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(200, 50);
+            this.btnExit.TabIndex = 2;
+            this.btnExit.Text = "Вийти";
+            this.btnExit.UseVisualStyleBackColor = false;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            // 
+            // AdminMenuForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(400, 400);
+            this.Controls.Add(this.btnExit);
+            this.Controls.Add(this.btnChangeAdminCredentials);
+            this.Controls.Add(this.btnViewPlayers);
+            this.Name = "AdminMenuForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Меню адміністратора";
+            this.ResumeLayout(false);
+        }
+
+        private System.Windows.Forms.Button btnViewPlayers;
+        private System.Windows.Forms.Button btnChangeAdminCredentials;
+        private System.Windows.Forms.Button btnExit;
+    }
+}
+
+ChangeAdminCredentialsForm.cs --- 
+
+using System;
+using System.IO;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class ChangeAdminCredentialsForm : Form
+    {
+        private const string AdminFilePath = "admin.txt";
+
+        public ChangeAdminCredentialsForm()
+        {
+            InitializeComponent();
+            this.KeyPreview = true; // Дозволяє обробку клавіш для всієї форми
+            this.KeyDown += ChangeAdminCredentialsForm_KeyDown;
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            string newUsername = txtNewEmail.Text.Trim();
+            string newPassword = txtNewPassword.Text.Trim();
+            string confirmPassword = txtConfirmPassword.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(newUsername) || string.IsNullOrWhiteSpace(newPassword))
+            {
+                MessageBox.Show("Будь ласка, заповніть всі поля!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                MessageBox.Show("Паролі не співпадають!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                if (File.Exists(AdminFilePath))
+                {
+                    // Зчитуємо поточні дані адміністратора
+                    var adminData = File.ReadAllLines(AdminFilePath);
+                    if (adminData.Length >= 2)
+                    {
+                        string currentLogin = adminData[0].Split(':')[1].Trim();
+                        string currentPassword = adminData[1].Split(':')[1].Trim();
+
+                        // Перевірка, чи не збігаються нові дані з поточними
+                        if (newUsername == currentLogin && newPassword == currentPassword)
+                        {
+                            MessageBox.Show("Неможливо змінити дані на такі ж самі!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+
+                    // Оновлюємо дані адміністратора
+                    File.WriteAllText(AdminFilePath, $"Login: {newUsername}\nPassword: {newPassword}");
+                    MessageBox.Show("Облікові дані адміністратора успішно змінено!", "Інформація", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Файл облікових записів не знайдено!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Сталася помилка: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void ChangeAdminCredentialsForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnSave_Click(sender, e);
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                btnCancel_Click(sender, e);
+            }
+        }
+    }
+}
+
+ChangeAdminCredentialsForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class ChangeAdminCredentialsForm
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            this.txtNewEmail = new System.Windows.Forms.TextBox();
+            this.txtNewPassword = new System.Windows.Forms.TextBox();
+            this.txtConfirmPassword = new System.Windows.Forms.TextBox();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // txtNewEmail
+            // 
+            this.txtNewEmail.Location = new System.Drawing.Point(50, 30);
+            this.txtNewEmail.Name = "txtNewEmail";
+            this.txtNewEmail.PlaceholderText = "Новий логін"; // Змінено текст
+            this.txtNewEmail.Size = new System.Drawing.Size(300, 27);
+            this.txtNewEmail.TabIndex = 0;
+            // 
+            // txtNewPassword
+            // 
+            this.txtNewPassword.Location = new System.Drawing.Point(50, 80);
+            this.txtNewPassword.Name = "txtNewPassword";
+            this.txtNewPassword.PasswordChar = '*';
+            this.txtNewPassword.PlaceholderText = "Новий пароль";
+            this.txtNewPassword.Size = new System.Drawing.Size(300, 27);
+            this.txtNewPassword.TabIndex = 1;
+            // 
+            // txtConfirmPassword
+            // 
+            this.txtConfirmPassword.Location = new System.Drawing.Point(50, 130);
+            this.txtConfirmPassword.Name = "txtConfirmPassword";
+            this.txtConfirmPassword.PasswordChar = '*';
+            this.txtConfirmPassword.PlaceholderText = "Підтвердити пароль";
+            this.txtConfirmPassword.Size = new System.Drawing.Size(300, 27);
+            this.txtConfirmPassword.TabIndex = 2;
+            // 
+            // btnSave
+            // 
+            this.btnSave.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.btnSave.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnSave.ForeColor = System.Drawing.Color.White;
+            this.btnSave.Location = new System.Drawing.Point(50, 180);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(130, 50);
+            this.btnSave.TabIndex = 3;
+            this.btnSave.Text = "Зберегти";
+            this.btnSave.UseVisualStyleBackColor = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.BackColor = System.Drawing.Color.Crimson;
+            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnCancel.ForeColor = System.Drawing.Color.White;
+            this.btnCancel.Location = new System.Drawing.Point(220, 180);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(130, 50);
+            this.btnCancel.TabIndex = 4;
+            this.btnCancel.Text = "Скасувати";
+            this.btnCancel.UseVisualStyleBackColor = false;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // ChangeAdminCredentialsForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(400, 250);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnSave);
+            this.Controls.Add(this.txtConfirmPassword);
+            this.Controls.Add(this.txtNewPassword);
+            this.Controls.Add(this.txtNewEmail);
+            this.Name = "ChangeAdminCredentialsForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Зміна облікових даних адміністратора";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        private System.Windows.Forms.TextBox txtNewEmail;
+        private System.Windows.Forms.TextBox txtNewPassword;
+        private System.Windows.Forms.TextBox txtConfirmPassword;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnCancel;
+    }
+}
+
+ChangeUserCredentialsForm.cs ---
+
+using System;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class ChangeUserCredentialsForm : Form
+    {
+        private readonly string currentUserEmail;
+
+        public ChangeUserCredentialsForm(string email)
+        {
+            InitializeComponent();
+            currentUserEmail = email;
+
+            // Дозволяємо перехоплювати натискання клавіш для всієї форми
+            this.KeyPreview = true;
+            this.KeyDown += ChangeUserCredentialsForm_KeyDown;
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            string newName = txtName.Text.Trim();
+            string newEmail = txtEmail.Text.Trim();
+            string newPassword = txtPassword.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(newName) || string.IsNullOrWhiteSpace(newEmail) || string.IsNullOrWhiteSpace(newPassword))
+            {
+                MessageBox.Show("Усі поля повинні бути заповнені!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                if (File.Exists("accounts.txt"))
+                {
+                    var accounts = File.ReadAllLines("accounts.txt").ToList();
+                    int index = accounts.FindIndex(a => a.Contains(currentUserEmail));
+                    if (index != -1)
+                    {
+                        accounts[index] = $"{newName},{newEmail},{newPassword}";
+                        File.WriteAllLines("accounts.txt", accounts);
+                        MessageBox.Show("Дані успішно змінено!", "Інформація", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        this.DialogResult = DialogResult.OK;
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Користувача не знайдено!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Файл облікових записів не знайдено!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void ChangeUserCredentialsForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnSave.PerformClick(); // Виклик функції збереження змін
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                btnCancel.PerformClick(); // Виклик функції скасування
+            }
+        }
+    }
+}
+
+ChangeUserCredentialsForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class ChangeUserCredentialsForm
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            this.txtName = new System.Windows.Forms.TextBox();
+            this.txtEmail = new System.Windows.Forms.TextBox();
+            this.txtPassword = new System.Windows.Forms.TextBox();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // txtName
+            // 
+            this.txtName.Location = new System.Drawing.Point(50, 30);
+            this.txtName.Name = "txtName";
+            this.txtName.PlaceholderText = "Нове ім'я";
+            this.txtName.Size = new System.Drawing.Size(300, 27);
+            this.txtName.TabIndex = 0;
+            // 
+            // txtEmail
+            // 
+            this.txtEmail.Location = new System.Drawing.Point(50, 80);
+            this.txtEmail.Name = "txtEmail";
+            this.txtEmail.PlaceholderText = "Новий Email";
+            this.txtEmail.Size = new System.Drawing.Size(300, 27);
+            this.txtEmail.TabIndex = 1;
+            // 
+            // txtPassword
+            // 
+            this.txtPassword.Location = new System.Drawing.Point(50, 130);
+            this.txtPassword.Name = "txtPassword";
+            this.txtPassword.PasswordChar = '*';
+            this.txtPassword.PlaceholderText = "Новий пароль";
+            this.txtPassword.Size = new System.Drawing.Size(300, 27);
+            this.txtPassword.TabIndex = 2;
+            // 
+            // btnSave
+            // 
+            this.btnSave.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.btnSave.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnSave.ForeColor = System.Drawing.Color.White;
+            this.btnSave.Location = new System.Drawing.Point(50, 180);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(100, 40);
+            this.btnSave.TabIndex = 3;
+            this.btnSave.Text = "Зберегти";
+            this.btnSave.UseVisualStyleBackColor = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.BackColor = System.Drawing.Color.Crimson;
+            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnCancel.ForeColor = System.Drawing.Color.White;
+            this.btnCancel.Location = new System.Drawing.Point(250, 180);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(100, 40);
+            this.btnCancel.TabIndex = 4;
+            this.btnCancel.Text = "Скасувати";
+            this.btnCancel.UseVisualStyleBackColor = false;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // ChangeUserCredentialsForm
+            // 
+            this.ClientSize = new System.Drawing.Size(400, 250);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnSave);
+            this.Controls.Add(this.txtPassword);
+            this.Controls.Add(this.txtEmail);
+            this.Controls.Add(this.txtName);
+            this.Name = "ChangeUserCredentialsForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Змінити облікові дані";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        private System.Windows.Forms.TextBox txtName;
+        private System.Windows.Forms.TextBox txtEmail;
+        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnCancel;
+    }
+}
+
+CustomMessageBox.cs --- 
+
+using System;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class CustomMessageBox : Form
+    {
+        public CustomMessageBox(string questionMessage, string yesText, string noText)
+        {
+            InitializeComponent();
+            lblQuestionMessage.Text = questionMessage; // Запитання
+            btnYes.Text = yesText;
+            btnNo.Text = noText;
+        }
+
+        private void btnYes_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Yes;
+            this.Close();
+        }
+
+        private void btnNo_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.No;
+            this.Close();
+        }
+    }
+}
+
+CustomMessageBox.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class CustomMessageBox
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            lblQuestionMessage = new Label();
+            btnYes = new Button();
+            btnNo = new Button();
+            SuspendLayout();
+            // 
+            // lblQuestionMessage
+            // 
+            lblQuestionMessage.Font = new Font("Segoe UI", 10F);
+            lblQuestionMessage.Location = new Point(31, 24);
+            lblQuestionMessage.Name = "lblQuestionMessage";
+            lblQuestionMessage.Size = new Size(240, 23);
+            lblQuestionMessage.TabIndex = 1;
+            lblQuestionMessage.Text = "Бажаєте зіграти ще раз?";
+            lblQuestionMessage.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // btnYes
+            // 
+            btnYes.BackColor = Color.LightSkyBlue;
+            btnYes.Font = new Font("Segoe UI", 12F);
+            btnYes.ForeColor = Color.DarkBlue;
+            btnYes.Location = new Point(41, 64);
+            btnYes.Name = "btnYes";
+            btnYes.Size = new Size(100, 40);
+            btnYes.TabIndex = 2;
+            btnYes.Text = "Так";
+            btnYes.UseVisualStyleBackColor = false;
+            btnYes.Click += btnYes_Click;
+            // 
+            // btnNo
+            // 
+            btnNo.BackColor = Color.LightCoral;
+            btnNo.Font = new Font("Segoe UI", 12F);
+            btnNo.ForeColor = Color.Maroon;
+            btnNo.Location = new Point(161, 64);
+            btnNo.Name = "btnNo";
+            btnNo.Size = new Size(100, 40);
+            btnNo.TabIndex = 3;
+            btnNo.Text = "Ні";
+            btnNo.UseVisualStyleBackColor = false;
+            btnNo.Click += btnNo_Click;
+            // 
+            // CustomMessageBox
+            // 
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(300, 129);
+            Controls.Add(btnNo);
+            Controls.Add(btnYes);
+            Controls.Add(lblQuestionMessage);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "CustomMessageBox";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Гра завершена";
+            ResumeLayout(false);
+        }
+
+        private System.Windows.Forms.Label lblQuestionMessage;
+        private System.Windows.Forms.Button btnYes;
+        private System.Windows.Forms.Button btnNo;
+    }
+}
+
+DataManager.cs --- 
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public static class DataManager
+    {
+        private const string AccountsFilePath = "accounts.txt";
+        private const string StatisticsFolderPath = "statistics";
+
+        static DataManager()
+        {
+            if (!Directory.Exists(StatisticsFolderPath))
+            {
+                Directory.CreateDirectory(StatisticsFolderPath);
+            }
+        }
+
+        public static bool AddUser(string name, string email, string password)
+        {
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                return false;
+            }
+
+            if (IsUserRegistered(email))
+            {
+                return false;
+            }
+
+            File.AppendAllText(AccountsFilePath, $"{name},{email},{password}\n");
+            return true;
+        }
+
+        public static bool IsUserRegistered(string email)
+        {
+            if (!File.Exists(AccountsFilePath))
+            {
+                return false;
+            }
+
+            var accounts = File.ReadAllLines(AccountsFilePath);
+            foreach (var account in accounts)
+            {
+                var parts = account.Split(',');
+                if (parts.Length > 1 && parts[1].Equals(email, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static string GetUserName(string? email)
+        {
+            if (email == "Комп'ютер")
+            {
+                return "Комп'ютер";
+            }
+
+            if (string.IsNullOrEmpty(email))
+            {
+                return "Невідомий гравець";
+            }
+
+            if (File.Exists(AccountsFilePath))
+            {
+                var accounts = File.ReadAllLines(AccountsFilePath);
+                foreach (var account in accounts)
+                {
+                    var parts = account.Split(',');
+                    if (parts.Length > 1 && parts[1].Equals(email, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return parts[0]; // Повертаємо ім'я
+                    }
+                }
+            }
+
+            return "Невідомий гравець";
+        }
+
+        public static void AddGameResult(string userEmail, string opponentName, string result, string playerChoice, string opponentChoice)
+        {
+            try
+            {
+                string filePath = Path.Combine(StatisticsFolderPath, $"{userEmail}.statistic.txt");
+
+                if (!Directory.Exists(StatisticsFolderPath))
+                {
+                    Directory.CreateDirectory(StatisticsFolderPath);
+                }
+
+                string userName = GetUserName(userEmail);
+
+                string opponentDisplayName = opponentName == "Комп'ютер" ? "Комп'ютер" : GetUserName(opponentName);
+
+                string logEntry = $"{DateTime.Now}: {userName} грав проти {opponentDisplayName}, Ваш хід: {playerChoice}, Хід супротивника: {opponentChoice}, результат: {result}";
+
+                File.AppendAllText(filePath, logEntry + Environment.NewLine);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка запису статистики: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public static List<string> GetStatistics(string email)
+        {
+            var results = new List<string>();
+            string filePath = Path.Combine(StatisticsFolderPath, $"{email}.statistic.txt");
+
+            if (File.Exists(filePath))
+            {
+                results.AddRange(File.ReadAllLines(filePath));
+            }
+
+            return results;
+        }
+
+        public static void ClearStatistics(string email)
+        {
+            try
+            {
+                string statisticsFilePath = Path.Combine(StatisticsFolderPath, $"{email}.statistic.txt");
+
+                if (File.Exists(statisticsFilePath))
+                {
+                    File.Delete(statisticsFilePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Помилка при видаленні статистики для {email}: {ex.Message}");
+            }
+        }
+
+        public static void RemoveUser(string email)
+        {
+            // Удаляем пользователя из accounts.txt
+            if (File.Exists(AccountsFilePath))
+            {
+                var accounts = File.ReadAllLines(AccountsFilePath);
+                var filteredAccounts = new List<string>();
+
+                foreach (var account in accounts)
+                {
+                    var parts = account.Split(',');
+                    if (parts.Length > 1 && !parts[1].Equals(email, StringComparison.OrdinalIgnoreCase))
+                    {
+                        filteredAccounts.Add(account);
+                    }
+                }
+
+                File.WriteAllLines(AccountsFilePath, filteredAccounts);
+            }
+
+            ClearStatistics(email);
+        }
+    }
+}
+
+GameWithComputerForm.cs --- 
+
+using System;
+using System.Drawing;
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class GameWithComputerForm : Form
+    {
+        private readonly string playerEmail;
+        private string? playerChoice;
+        private string? computerChoice;
+
+        public GameWithComputerForm(string email)
+        {
+            InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen; // Центруємо форму
+            playerEmail = email ?? throw new ArgumentNullException(nameof(email));
+            SetBackgroundImage();
+            LoadButtonImages();
+
+            // Встановлюємо початкові зображення
+            ResetGame();
+        }
+
+        private void SetBackgroundImage()
+        {
+            try
+            {
+                this.BackgroundImage = Image.FromFile("Resources/game_background.jpg");
+                this.BackgroundImageLayout = ImageLayout.Stretch;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження фону: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LoadButtonImages()
+        {
+            try
+            {
+                btnRock.Image = ResizeImage("Resources/rock.jpg", btnRock.Width, btnRock.Height);
+                btnPaper.Image = ResizeImage("Resources/paper.jpg", btnPaper.Width, btnPaper.Height);
+                btnScissors.Image = ResizeImage("Resources/scissors.jpg", btnScissors.Width, btnScissors.Height);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження зображень для кнопок: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void btnRock_Click(object sender, EventArgs e)
+        {
+            await HandlePlayerChoice("rock");
+        }
+
+        private async void btnPaper_Click(object sender, EventArgs e)
+        {
+            await HandlePlayerChoice("paper");
+        }
+
+        private async void btnScissors_Click(object sender, EventArgs e)
+        {
+            await HandlePlayerChoice("scissors");
+        }
+
+        private async Task HandlePlayerChoice(string choice)
+        {
+            try
+            {
+                playerChoice = choice;
+                playerChoiceBox.Image = Image.FromFile($"Resources/{choice}.jpg");
+
+                await Task.Delay(500); // Затримка перед вибором комп'ютера
+                computerChoice = GetComputerChoice();
+                computerChoiceBox.Image = Image.FromFile($"Resources/{computerChoice}.jpg");
+
+                await Task.Delay(500); // Затримка перед відображенням результату
+                ShowResult();
+
+                // Після показу результату скидаємо стан гри
+                ResetGame();
+            }
+            catch (FileNotFoundException ex)
+            {
+                MessageBox.Show($"Не вдалося знайти файл зображення: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Сталася помилка під час обробки вибору: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private string GetComputerChoice()
+        {
+            var choices = new[] { "rock", "paper", "scissors" };
+            var random = new Random();
+            return choices[random.Next(choices.Length)];
+        }
+
+        private string TranslateChoice(string choice)
+        {
+            return choice switch
+            {
+                "rock" => "камінь",
+                "paper" => "папір",
+                "scissors" => "ножиці",
+                _ => choice
+            };
+        }
+
+        private void ShowResult()
+        {
+            string playerName = DataManager.GetUserName(playerEmail); // Отримуємо ім'я гравця
+            string result;
+
+            if (playerChoice == computerChoice)
+            {
+                result = "Нічия!";
+            }
+            else if ((playerChoice == "rock" && computerChoice == "scissors") ||
+                     (playerChoice == "paper" && computerChoice == "rock") ||
+                     (playerChoice == "scissors" && computerChoice == "paper"))
+            {
+                result = $"{playerName} виграв!";
+            }
+            else
+            {
+                result = "Комп'ютер виграв!";
+            }
+
+            resultLabel.Text = result;
+
+            // Записуємо результат до статистики
+            DataManager.AddGameResult(playerEmail, "Комп'ютер", result, TranslateChoice(playerChoice ?? string.Empty), TranslateChoice(computerChoice ?? string.Empty));
+        }
+
+        private void ResetGame()
+        {
+            playerChoice = null;
+            computerChoice = null;
+            playerChoiceBox.Image = null; // Очищаємо зображення вибору
+            computerChoiceBox.Image = null; // Очищаємо зображення вибору
+            playerPictureBox.Image = Image.FromFile("Resources/player.jpg"); // Встановлюємо стартову картинку гравця
+            computerPictureBox.Image = Image.FromFile("Resources/computer.jpg"); // Встановлюємо стартову картинку комп'ютера
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private Image ResizeImage(string filePath, int width, int height)
+        {
+            using (var originalImage = Image.FromFile(filePath))
+            {
+                var resizedImage = new Bitmap(originalImage, new Size(width, height));
+                return resizedImage;
+            }
+        }
+    }
+}
+
+GameWithComputerForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class GameWithComputerForm
+    {
+        private System.ComponentModel.IContainer components = null;
+        private PictureBox playerPictureBox;
+        private PictureBox computerPictureBox;
+        private PictureBox playerChoiceBox;
+        private PictureBox computerChoiceBox;
+        private Label resultLabel;
+        private Button btnRock;
+        private Button btnPaper;
+        private Button btnScissors;
+        private Button btnBack;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            playerPictureBox = new PictureBox();
+            computerPictureBox = new PictureBox();
+            playerChoiceBox = new PictureBox();
+            computerChoiceBox = new PictureBox();
+            resultLabel = new Label();
+            btnRock = new Button();
+            btnPaper = new Button();
+            btnScissors = new Button();
+            btnBack = new Button();
+            ((System.ComponentModel.ISupportInitialize)playerPictureBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)computerPictureBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)playerChoiceBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)computerChoiceBox).BeginInit();
+            SuspendLayout();
+            // 
+            // playerPictureBox
+            // 
+            playerPictureBox.Location = new Point(50, 50);
+            playerPictureBox.Name = "playerPictureBox";
+            playerPictureBox.Size = new Size(150, 150);
+            playerPictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            playerPictureBox.TabIndex = 0;
+            playerPictureBox.TabStop = false;
+            // 
+            // computerPictureBox
+            // 
+            computerPictureBox.Location = new Point(500, 50);
+            computerPictureBox.Name = "computerPictureBox";
+            computerPictureBox.Size = new Size(150, 150);
+            computerPictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            computerPictureBox.TabIndex = 1;
+            computerPictureBox.TabStop = false;
+            // 
+            // playerChoiceBox
+            // 
+            playerChoiceBox.BorderStyle = BorderStyle.FixedSingle;
+            playerChoiceBox.Location = new Point(220, 50);
+            playerChoiceBox.Name = "playerChoiceBox";
+            playerChoiceBox.Size = new Size(115, 114);
+            playerChoiceBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            playerChoiceBox.TabIndex = 2;
+            playerChoiceBox.TabStop = false;
+            // 
+            // computerChoiceBox
+            // 
+            computerChoiceBox.BorderStyle = BorderStyle.FixedSingle;
+            computerChoiceBox.Location = new Point(370, 50);
+            computerChoiceBox.Name = "computerChoiceBox";
+            computerChoiceBox.Size = new Size(110, 114);
+            computerChoiceBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            computerChoiceBox.TabIndex = 3;
+            computerChoiceBox.TabStop = false;
+            // 
+            // resultLabel
+            // 
+            resultLabel.BackColor = Color.FromArgb(200, 255, 255, 255);
+            resultLabel.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            resultLabel.ForeColor = Color.Red;
+            resultLabel.Location = new Point(201, 217);
+            resultLabel.Name = "resultLabel";
+            resultLabel.Size = new Size(300, 36);
+            resultLabel.TabIndex = 4;
+            resultLabel.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // btnRock
+            // 
+            btnRock.Location = new Point(150, 300);
+            btnRock.Name = "btnRock";
+            btnRock.Size = new Size(100, 100);
+            btnRock.TabIndex = 5;
+            btnRock.Click += btnRock_Click;
+            // 
+            // btnPaper
+            // 
+            btnPaper.Location = new Point(300, 300);
+            btnPaper.Name = "btnPaper";
+            btnPaper.Size = new Size(100, 100);
+            btnPaper.TabIndex = 6;
+            btnPaper.Click += btnPaper_Click;
+            // 
+            // btnScissors
+            // 
+            btnScissors.Location = new Point(450, 300);
+            btnScissors.Name = "btnScissors";
+            btnScissors.Size = new Size(100, 100);
+            btnScissors.TabIndex = 7;
+            btnScissors.Click += btnScissors_Click;
+            // 
+            // btnBack
+            // 
+            btnBack.BackColor = Color.Crimson;
+            btnBack.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            btnBack.ForeColor = Color.White;
+            btnBack.Location = new Point(276, 443);
+            btnBack.Name = "btnBack";
+            btnBack.Size = new Size(150, 50);
+            btnBack.TabIndex = 8;
+            btnBack.Text = "Назад";
+            btnBack.UseVisualStyleBackColor = false;
+            btnBack.Click += btnBack_Click;
+            // 
+            // GameWithComputerForm
+            // 
+            ClientSize = new Size(700, 543);
+            Controls.Add(playerPictureBox);
+            Controls.Add(computerPictureBox);
+            Controls.Add(playerChoiceBox);
+            Controls.Add(computerChoiceBox);
+            Controls.Add(resultLabel);
+            Controls.Add(btnRock);
+            Controls.Add(btnPaper);
+            Controls.Add(btnScissors);
+            Controls.Add(btnBack);
+            Name = "GameWithComputerForm";
+            Text = "Гра проти Комп'ютера";
+            ((System.ComponentModel.ISupportInitialize)playerPictureBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)computerPictureBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)playerChoiceBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)computerChoiceBox).EndInit();
+            ResumeLayout(false);
+        }
+    }
+}
+
+GameWithPlayerForm.cs --- 
+
+using System;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class GameWithPlayerForm : Form
+    {
+        private string player1Email;
+        private string? player2Email = null;
+        private string? player1Choice = null;
+        private string? player2Choice = null;
+        private string? temporaryPlayer1Choice = null; // Тимчасовий вибір для Гравця 1
+        private string? temporaryPlayer2Choice = null; // Тимчасовий вибір для Гравця 2
+
+        public GameWithPlayerForm(string email)
+        {
+            InitializeComponent();
+            player1Email = email ?? throw new ArgumentNullException(nameof(email));
+            SetBackgroundImage();
+            LoadButtonImages();
+            UpdatePlayerLabels();
+
+            player1PictureBox.Image = Image.FromFile("Resources/player.jpg");
+            player2PictureBox.Image = Image.FromFile("Resources/player.jpg");
+        }
+
+        private void SetBackgroundImage()
+        {
+            try
+            {
+                this.BackgroundImage = Image.FromFile("Resources/game_background.jpg");
+                this.BackgroundImageLayout = ImageLayout.Stretch;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження фону: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LoadButtonImages()
+        {
+            try
+            {
+                btnRock.Image = ResizeImage("Resources/rock.jpg", btnRock.Width, btnRock.Height);
+                btnPaper.Image = ResizeImage("Resources/paper.jpg", btnPaper.Width, btnPaper.Height);
+                btnScissors.Image = ResizeImage("Resources/scissors.jpg", btnScissors.Width, btnScissors.Height);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження зображень для кнопок: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private Image ResizeImage(string filePath, int width, int height)
+        {
+            using (var originalImage = Image.FromFile(filePath))
+            {
+                var resizedImage = new Bitmap(originalImage, new Size(width, height));
+                return resizedImage;
+            }
+        }
+
+        private void UpdatePlayerLabels()
+        {
+            lblPlayer1.Text = GetUserName(player1Email);
+            lblPlayer2.Text = string.IsNullOrEmpty(player2Email) ? "Невідомо" : GetUserName(player2Email);
+        }
+
+        private string GetUserName(string? email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return "Невідомо";
+            }
+
+            if (File.Exists("accounts.txt"))
+            {
+                var accounts = File.ReadAllLines("accounts.txt");
+                foreach (var account in accounts)
+                {
+                    var parts = account.Split(',');
+                    if (parts.Length == 3 && parts[1].Equals(email, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return parts[0];
+                    }
+                }
+            }
+            return "Невідомо";
+        }
+
+        private void btnPlayer2Login_Click(object sender, EventArgs e)
+        {
+            UserOptionForm optionForm = new UserOptionForm();
+            if (optionForm.ShowDialog() == DialogResult.OK)
+            {
+                if (optionForm.IsLoginSelected)
+                {
+                    UserLoginForm loginForm = new UserLoginForm();
+                    if (loginForm.ShowDialog() == DialogResult.OK)
+                    {
+                        if (loginForm.UserEmail.Equals(player1Email, StringComparison.OrdinalIgnoreCase))
+                        {
+                            MessageBox.Show("Гравець 2 не може використовувати ті самі дані, що і Гравець 1!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        player2Email = loginForm.UserEmail;
+                        UpdatePlayerLabels();
+                    }
+                }
+                else
+                {
+                    UserRegistrationForm registrationForm = new UserRegistrationForm();
+                    if (registrationForm.ShowDialog() == DialogResult.OK)
+                    {
+                        MessageBox.Show("Реєстрація успішна! Тепер ви можете увійти.", "Інформація", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        UserLoginForm loginForm = new UserLoginForm();
+                        if (loginForm.ShowDialog() == DialogResult.OK)
+                        {
+                            if (loginForm.UserEmail.Equals(player1Email, StringComparison.OrdinalIgnoreCase))
+                            {
+                                MessageBox.Show("Гравець 2 не може використовувати ті самі дані, що і Гравець 1!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
+
+                            player2Email = loginForm.UserEmail;
+                            UpdatePlayerLabels();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void btnPlayer1Choice_Click(object sender, EventArgs e)
+        {
+            lblMessagePlayer1.Text = "Зробіть хід";
+            EnableChoiceButtons();
+            DisablePlayerButtons();
+            temporaryPlayer1Choice = null;
+        }
+
+        private void btnPlayer2Choice_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(player2Email))
+            {
+                MessageBox.Show("Гравець 2 ще не увійшов у гру!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            lblMessagePlayer2.Text = "Зробіть хід";
+            EnableChoiceButtons();
+            DisablePlayerButtons();
+            temporaryPlayer2Choice = null;
+        }
+
+        private void ChoiceButton_Click(object sender, EventArgs e)
+        {
+            Button choiceButton = sender as Button;
+            if (choiceButton == null) return;
+
+            string choice = choiceButton.Tag.ToString();
+            if (lblMessagePlayer1.Text == "Зробіть хід")
+            {
+                temporaryPlayer1Choice = choice;
+                lblMessagePlayer1.Text = "Очікуємо хід Гравця 2...";
+                DisableChoiceButtons();
+                btnPlayer2Choice.Enabled = true;
+            }
+            else if (lblMessagePlayer2.Text == "Зробіть хід")
+            {
+                temporaryPlayer2Choice = choice;
+                lblMessagePlayer2.Text = "Очікуємо хід Гравця 1...";
+                DisableChoiceButtons();
+
+                if (!string.IsNullOrEmpty(temporaryPlayer1Choice) && !string.IsNullOrEmpty(temporaryPlayer2Choice))
+                {
+                    player1Choice = temporaryPlayer1Choice;
+                    player2Choice = temporaryPlayer2Choice;
+
+                    player1ChoiceBox.Image = Image.FromFile($"Resources/{player1Choice}.jpg");
+                    player2ChoiceBox.Image = Image.FromFile($"Resources/{player2Choice}.jpg");
+
+                    CheckWinner();
+                }
+            }
+        }
+
+        private string TranslateChoice(string choice)
+        {
+            return choice switch
+            {
+                "rock" => "камінь",
+                "paper" => "папір",
+                "scissors" => "ножиці",
+                _ => choice
+            };
+        }
+
+        private void CheckWinner()
+        {
+            string result;
+            string winnerName = "Нічия";
+
+            if (player1Choice == player2Choice)
+            {
+                result = "Нічия";
+            }
+            else if ((player1Choice == "rock" && player2Choice == "scissors") ||
+                     (player1Choice == "paper" && player2Choice == "rock") ||
+                     (player1Choice == "scissors" && player2Choice == "paper"))
+            {
+                result = "Перемога";
+                winnerName = GetUserName(player1Email);
+
+                DataManager.AddGameResult(player1Email, player2Email, result, TranslateChoice(player1Choice ?? string.Empty), TranslateChoice(player2Choice ?? string.Empty));
+                DataManager.AddGameResult(player2Email, player1Email, "Поразка", TranslateChoice(player2Choice ?? string.Empty), TranslateChoice(player1Choice ?? string.Empty));
+            }
+            else
+            {
+                result = "Перемога";
+                winnerName = GetUserName(player2Email);
+
+                DataManager.AddGameResult(player2Email, player1Email, "Поразка", TranslateChoice(player2Choice ?? string.Empty), TranslateChoice(player1Choice ?? string.Empty));
+                DataManager.AddGameResult(player1Email, player2Email, result, TranslateChoice(player1Choice ?? string.Empty), TranslateChoice(player2Choice ?? string.Empty));
+            }
+
+            resultLabel.Text = $"{result} ({winnerName})";
+
+            var customMessageBox = new CustomMessageBox($"Бажаєте зіграти ще раз?", "Так", "Ні");
+            if (customMessageBox.ShowDialog() == DialogResult.Yes)
+            {
+                ResetGame();
+            }
+            else
+            {
+                this.Close();
+            }
+        }
+
+        private void ResetGame()
+        {
+            player1Choice = null;
+            player2Choice = null;
+            temporaryPlayer1Choice = null;
+            temporaryPlayer2Choice = null;
+            player1ChoiceBox.Image = null;
+            player2ChoiceBox.Image = null;
+            resultLabel.Text = "";
+            EnablePlayerButtons();
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void EnableChoiceButtons()
+        {
+            btnRock.Enabled = true;
+            btnPaper.Enabled = true;
+            btnScissors.Enabled = true;
+        }
+
+        private void DisableChoiceButtons()
+        {
+            btnRock.Enabled = false;
+            btnPaper.Enabled = false;
+            btnScissors.Enabled = false;
+        }
+
+        private void EnablePlayerButtons()
+        {
+            btnPlayer1Choice.Enabled = true;
+            btnPlayer2Choice.Enabled = true;
+        }
+
+        private void DisablePlayerButtons()
+        {
+            btnPlayer1Choice.Enabled = false;
+            btnPlayer2Choice.Enabled = false;
+        }
+    }
+}
+
+GameWithPlayerForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class GameWithPlayerForm
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            lblPlayer1 = new Label();
+            lblPlayer2 = new Label();
+            lblMessagePlayer1 = new Label();
+            lblMessagePlayer2 = new Label();
+            resultLabel = new Label();
+            btnRock = new Button();
+            btnPaper = new Button();
+            btnScissors = new Button();
+            btnPlayer1Choice = new Button();
+            btnPlayer2Choice = new Button();
+            btnPlayer2Login = new Button();
+            btnBack = new Button();
+            player1ChoiceBox = new PictureBox();
+            player2ChoiceBox = new PictureBox();
+            player1PictureBox = new PictureBox();
+            player2PictureBox = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)player1ChoiceBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)player2ChoiceBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)player1PictureBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)player2PictureBox).BeginInit();
+            SuspendLayout();
+            // 
+            // lblPlayer1
+            // 
+            lblPlayer1.Font = new Font("Segoe UI", 12F);
+            lblPlayer1.Location = new Point(50, 20);
+            lblPlayer1.Name = "lblPlayer1";
+            lblPlayer1.Size = new Size(150, 30);
+            lblPlayer1.TabIndex = 0;
+            lblPlayer1.Text = "Player 1";
+            lblPlayer1.BackColor = Color.FromArgb(200, 255, 255, 255); // Напівпрозорий фон
+            // 
+            // lblPlayer2
+            // 
+            lblPlayer2.Font = new Font("Segoe UI", 12F);
+            lblPlayer2.Location = new Point(500, 20);
+            lblPlayer2.Name = "lblPlayer2";
+            lblPlayer2.Size = new Size(150, 30);
+            lblPlayer2.TabIndex = 1;
+            lblPlayer2.Text = "Unknown";
+            lblPlayer2.BackColor = Color.FromArgb(200, 255, 255, 255); // Напівпрозорий фон
+            // 
+            // lblMessagePlayer1
+            // 
+            lblMessagePlayer1.Font = new Font("Segoe UI", 10F);
+            lblMessagePlayer1.ForeColor = Color.DarkGreen;
+            lblMessagePlayer1.Location = new Point(50, 300);
+            lblMessagePlayer1.Name = "lblMessagePlayer1";
+            lblMessagePlayer1.Size = new Size(150, 30);
+            lblMessagePlayer1.TabIndex = 2;
+            lblMessagePlayer1.BackColor = Color.FromArgb(200, 255, 255, 255); // Напівпрозорий фон
+            // 
+            // lblMessagePlayer2
+            // 
+            lblMessagePlayer2.Font = new Font("Segoe UI", 10F);
+            lblMessagePlayer2.ForeColor = Color.DarkGreen;
+            lblMessagePlayer2.Location = new Point(500, 300);
+            lblMessagePlayer2.Name = "lblMessagePlayer2";
+            lblMessagePlayer2.Size = new Size(150, 30);
+            lblMessagePlayer2.TabIndex = 3;
+            lblMessagePlayer2.BackColor = Color.FromArgb(200, 255, 255, 255); // Напівпрозорий фон
+            // 
+            // resultLabel
+            // 
+            resultLabel.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            resultLabel.ForeColor = Color.Red;
+            resultLabel.Location = new Point(220, 50);
+            resultLabel.Name = "resultLabel";
+            resultLabel.Size = new Size(260, 32);
+            resultLabel.TabIndex = 4;
+            resultLabel.TextAlign = ContentAlignment.MiddleCenter;
+            resultLabel.BackColor = Color.FromArgb(200, 255, 255, 255); // Напівпрозорий фон
+            // 
+            // btnRock
+            // 
+            btnRock.Location = new Point(184, 358);
+            btnRock.Name = "btnRock";
+            btnRock.Size = new Size(80, 80);
+            btnRock.TabIndex = 5;
+            btnRock.Tag = "rock";
+            btnRock.Click += ChoiceButton_Click;
+            // 
+            // btnPaper
+            // 
+            btnPaper.Location = new Point(304, 358);
+            btnPaper.Name = "btnPaper";
+            btnPaper.Size = new Size(80, 80);
+            btnPaper.TabIndex = 6;
+            btnPaper.Tag = "paper";
+            btnPaper.Click += ChoiceButton_Click;
+            // 
+            // btnScissors
+            // 
+            btnScissors.Location = new Point(424, 358);
+            btnScissors.Name = "btnScissors";
+            btnScissors.Size = new Size(80, 80);
+            btnScissors.TabIndex = 7;
+            btnScissors.Tag = "scissors";
+            btnScissors.Click += ChoiceButton_Click;
+            // 
+            // btnPlayer1Choice
+            // 
+            btnPlayer1Choice.BackColor = Color.LightBlue;
+            btnPlayer1Choice.Font = new Font("Segoe UI", 12F);
+            btnPlayer1Choice.Location = new Point(50, 250);
+            btnPlayer1Choice.Name = "btnPlayer1Choice";
+            btnPlayer1Choice.Size = new Size(150, 40);
+            btnPlayer1Choice.TabIndex = 8;
+            btnPlayer1Choice.Text = "Хід Гравця 1";
+            btnPlayer1Choice.UseVisualStyleBackColor = false;
+            btnPlayer1Choice.Click += btnPlayer1Choice_Click;
+            // 
+            // btnPlayer2Choice
+            // 
+            btnPlayer2Choice.BackColor = Color.LightCoral;
+            btnPlayer2Choice.Font = new Font("Segoe UI", 12F);
+            btnPlayer2Choice.Location = new Point(500, 250);
+            btnPlayer2Choice.Name = "btnPlayer2Choice";
+            btnPlayer2Choice.Size = new Size(150, 40);
+            btnPlayer2Choice.TabIndex = 9;
+            btnPlayer2Choice.Text = "Хід Гравця 2";
+            btnPlayer2Choice.UseVisualStyleBackColor = false;
+            btnPlayer2Choice.Click += btnPlayer2Choice_Click;
+            // 
+            // btnPlayer2Login
+            // 
+            btnPlayer2Login.BackColor = Color.MediumSlateBlue;
+            btnPlayer2Login.Font = new Font("Segoe UI", 12F);
+            btnPlayer2Login.ForeColor = Color.White;
+            btnPlayer2Login.Location = new Point(500, 200);
+            btnPlayer2Login.Name = "btnPlayer2Login";
+            btnPlayer2Login.Size = new Size(150, 40);
+            btnPlayer2Login.TabIndex = 10;
+            btnPlayer2Login.Text = "Увійти до Гри";
+            btnPlayer2Login.UseVisualStyleBackColor = false;
+            btnPlayer2Login.Click += btnPlayer2Login_Click;
+            // 
+            // btnBack
+            // 
+            btnBack.BackColor = Color.Crimson;
+            btnBack.Font = new Font("Segoe UI", 12F);
+            btnBack.ForeColor = Color.White;
+            btnBack.Location = new Point(273, 475);
+            btnBack.Name = "btnBack";
+            btnBack.Size = new Size(150, 50);
+            btnBack.TabIndex = 11;
+            btnBack.Text = "Назад";
+            btnBack.UseVisualStyleBackColor = false;
+            btnBack.Click += btnBack_Click;
+            // 
+            // player1ChoiceBox
+            // 
+            player1ChoiceBox.BorderStyle = BorderStyle.FixedSingle;
+            player1ChoiceBox.Location = new Point(220, 98);
+            player1ChoiceBox.Name = "player1ChoiceBox";
+            player1ChoiceBox.Size = new Size(108, 102);
+            player1ChoiceBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            player1ChoiceBox.TabIndex = 12;
+            player1ChoiceBox.TabStop = false;
+            // 
+            // player2ChoiceBox
+            // 
+            player2ChoiceBox.BorderStyle = BorderStyle.FixedSingle;
+            player2ChoiceBox.Location = new Point(369, 98);
+            player2ChoiceBox.Name = "player2ChoiceBox";
+            player2ChoiceBox.Size = new Size(111, 102);
+            player2ChoiceBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            player2ChoiceBox.TabIndex = 13;
+            player2ChoiceBox.TabStop = false;
+            // 
+            // player1PictureBox
+            // 
+            player1PictureBox.Location = new Point(50, 50);
+            player1PictureBox.Name = "player1PictureBox";
+            player1PictureBox.Size = new Size(150, 150);
+            player1PictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            player1PictureBox.TabIndex = 14;
+            player1PictureBox.TabStop = false;
+            // 
+            // player2PictureBox
+            // 
+            player2PictureBox.Location = new Point(500, 50);
+            player2PictureBox.Name = "player2PictureBox";
+            player2PictureBox.Size = new Size(150, 150);
+            player2PictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            player2PictureBox.TabIndex = 15;
+            player2PictureBox.TabStop = false;
+            // 
+            // GameWithPlayerForm
+            // 
+            ClientSize = new Size(700, 565);
+            Controls.Add(lblPlayer1);
+            Controls.Add(lblPlayer2);
+            Controls.Add(lblMessagePlayer1);
+            Controls.Add(lblMessagePlayer2);
+            Controls.Add(resultLabel);
+            Controls.Add(btnRock);
+            Controls.Add(btnPaper);
+            Controls.Add(btnScissors);
+            Controls.Add(btnPlayer1Choice);
+            Controls.Add(btnPlayer2Choice);
+            Controls.Add(btnPlayer2Login);
+            Controls.Add(btnBack);
+            Controls.Add(player1ChoiceBox);
+            Controls.Add(player2ChoiceBox);
+            Controls.Add(player1PictureBox);
+            Controls.Add(player2PictureBox);
+            Name = "GameWithPlayerForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Гра з Гравцем";
+            ((System.ComponentModel.ISupportInitialize)player1ChoiceBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)player2ChoiceBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)player1PictureBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)player2PictureBox).EndInit();
+            ResumeLayout(false);
+        }
+
+        private System.Windows.Forms.Label lblPlayer1;
+        private System.Windows.Forms.Label lblPlayer2;
+        private System.Windows.Forms.Label lblMessagePlayer1;
+        private System.Windows.Forms.Label lblMessagePlayer2;
+        private System.Windows.Forms.Label resultLabel;
+        private System.Windows.Forms.Button btnRock;
+        private System.Windows.Forms.Button btnPaper;
+        private System.Windows.Forms.Button btnScissors;
+        private System.Windows.Forms.Button btnPlayer1Choice;
+        private System.Windows.Forms.Button btnPlayer2Choice;
+        private System.Windows.Forms.Button btnPlayer2Login;
+        private System.Windows.Forms.Button btnBack;
+        private System.Windows.Forms.PictureBox player1ChoiceBox;
+        private System.Windows.Forms.PictureBox player2ChoiceBox;
+        private System.Windows.Forms.PictureBox player1PictureBox;
+        private System.Windows.Forms.PictureBox player2PictureBox;
+    }
+}
+
+MainForm.cs --- 
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+using WMPLib; // Для відтворення MP3 файлів
+
+namespace RockPaperScissorsGame
+{
+    public partial class MainForm : Form
+    {
+        private WindowsMediaPlayer mediaPlayer;
+        private bool isMuted = false;
+
+        public MainForm()
+        {
+            InitializeComponent();
+            SetBackgroundImage();
+            InitializeBackgroundMusic();
+        }
+
+        private void SetBackgroundImage()
+        {
+            try
+            {
+                this.BackgroundImage = Image.FromFile("Resources/program_background.jpg");
+                this.BackgroundImageLayout = ImageLayout.Stretch;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження фону: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void InitializeBackgroundMusic()
+        {
+            try
+            {
+                mediaPlayer = new WindowsMediaPlayer();
+                mediaPlayer.URL = "Resources/sound.mp3";
+                mediaPlayer.settings.setMode("loop", true); // Зациклення
+                mediaPlayer.controls.play();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження музики: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnAdminMenu_Click(object sender, EventArgs e)
+        {
+            AdminLoginForm adminLogin = new AdminLoginForm();
+            adminLogin.ShowDialog();
+        }
+
+        private void btnUserMenu_Click(object sender, EventArgs e)
+        {
+            UserOptionForm userOptionForm = new UserOptionForm();
+            if (userOptionForm.ShowDialog() == DialogResult.OK)
+            {
+                if (userOptionForm.IsLoginSelected)
+                {
+                    UserLoginForm loginForm = new UserLoginForm();
+                    if (loginForm.ShowDialog() == DialogResult.OK)
+                    {
+                        UserMenuForm userMenuForm = new UserMenuForm(loginForm.UserEmail);
+                        userMenuForm.ShowDialog();
+                    }
+                }
+                else
+                {
+                    UserRegistrationForm registrationForm = new UserRegistrationForm();
+                    if (registrationForm.ShowDialog() == DialogResult.OK)
+                    {
+                        MessageBox.Show("Реєстрація успішна! Тепер ви можете увійти.", "Інформація", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        UserLoginForm loginForm = new UserLoginForm();
+                        if (loginForm.ShowDialog() == DialogResult.OK)
+                        {
+                            UserMenuForm userMenuForm = new UserMenuForm(loginForm.UserEmail);
+                            userMenuForm.ShowDialog();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void infoMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Гра 'Камінь Ножиці Папір'", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnMute_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (isMuted)
+                {
+                    mediaPlayer.controls.play(); // Відновлюємо музику
+                    btnMute.BackgroundImage = Image.FromFile("Resources/mute.jpg");
+                }
+                else
+                {
+                    mediaPlayer.controls.pause(); // Зупиняємо музику
+                    btnMute.BackgroundImage = Image.FromFile("Resources/unmute.jpg");
+                }
+                isMuted = !isMuted;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка керування музикою: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+    }
+}
+
+MainForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class MainForm
+    {
+        private System.ComponentModel.IContainer components = null;
+        private System.Windows.Forms.Button btnAdminMenu;
+        private System.Windows.Forms.Button btnUserMenu;
+        private System.Windows.Forms.Button btnExit;
+        private System.Windows.Forms.MenuStrip mainMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem infoMenuItem;
+        private System.Windows.Forms.Button btnMute;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        private void InitializeComponent()
+        {
+            this.btnAdminMenu = new System.Windows.Forms.Button();
+            this.btnUserMenu = new System.Windows.Forms.Button();
+            this.btnExit = new System.Windows.Forms.Button();
+            this.mainMenuStrip = new System.Windows.Forms.MenuStrip();
+            this.infoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnMute = new System.Windows.Forms.Button();
+
+            this.SuspendLayout();
+
+            // 
+            // btnAdminMenu
+            // 
+            this.btnAdminMenu.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.btnAdminMenu.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAdminMenu.ForeColor = System.Drawing.Color.White;
+            this.btnAdminMenu.Location = new System.Drawing.Point(200, 100);
+            this.btnAdminMenu.Name = "btnAdminMenu";
+            this.btnAdminMenu.Size = new System.Drawing.Size(200, 50);
+            this.btnAdminMenu.TabIndex = 0;
+            this.btnAdminMenu.Text = "Меню адміністратора";
+            this.btnAdminMenu.UseVisualStyleBackColor = false;
+            this.btnAdminMenu.Click += new System.EventHandler(this.btnAdminMenu_Click);
+
+            // 
+            // btnUserMenu
+            // 
+            this.btnUserMenu.BackColor = System.Drawing.Color.MediumSeaGreen;
+            this.btnUserMenu.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnUserMenu.ForeColor = System.Drawing.Color.White;
+            this.btnUserMenu.Location = new System.Drawing.Point(200, 180);
+            this.btnUserMenu.Name = "btnUserMenu";
+            this.btnUserMenu.Size = new System.Drawing.Size(200, 50);
+            this.btnUserMenu.TabIndex = 1;
+            this.btnUserMenu.Text = "Меню користувача";
+            this.btnUserMenu.UseVisualStyleBackColor = false;
+            this.btnUserMenu.Click += new System.EventHandler(this.btnUserMenu_Click);
+
+            // 
+            // btnExit
+            // 
+            this.btnExit.BackColor = System.Drawing.Color.Crimson;
+            this.btnExit.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnExit.ForeColor = System.Drawing.Color.White;
+            this.btnExit.Location = new System.Drawing.Point(200, 260);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(200, 50);
+            this.btnExit.TabIndex = 2;
+            this.btnExit.Text = "Вийти";
+            this.btnExit.UseVisualStyleBackColor = false;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+
+            // 
+            // mainMenuStrip
+            // 
+            this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.infoMenuItem});
+            this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
+            this.mainMenuStrip.Name = "mainMenuStrip";
+            this.mainMenuStrip.Size = new System.Drawing.Size(600, 24);
+            this.mainMenuStrip.TabIndex = 3;
+            this.mainMenuStrip.Text = "menuStrip1";
+            this.mainMenuStrip.Dock = System.Windows.Forms.DockStyle.Top;
+
+            // 
+            // infoMenuItem
+            // 
+            this.infoMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right; // Вирівнювання вправо
+            this.infoMenuItem.Name = "infoMenuItem";
+            this.infoMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.infoMenuItem.Text = "Info";
+            this.infoMenuItem.Click += new System.EventHandler(this.infoMenuItem_Click);
+
+            // 
+            // btnMute
+            // 
+            this.btnMute.Location = new System.Drawing.Point(540, 30); // Розташування кнопки під Info
+            this.btnMute.Size = new System.Drawing.Size(40, 40);
+            this.btnMute.Name = "btnMute";
+            this.btnMute.BackgroundImage = Image.FromFile("Resources/mute.jpg");
+            this.btnMute.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnMute.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMute.Click += new System.EventHandler(this.btnMute_Click);
+
+            // 
+            // MainForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(600, 400);
+            this.Controls.Add(this.btnMute);
+            this.Controls.Add(this.mainMenuStrip);
+            this.Controls.Add(this.btnExit);
+            this.Controls.Add(this.btnUserMenu);
+            this.Controls.Add(this.btnAdminMenu);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Головне меню";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        #endregion
+    }
+}
+
+PlayerManagementForm.cs --- 
+
+using System;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class PlayerManagementForm : Form
+    {
+        public PlayerManagementForm()
+        {
+            InitializeComponent();
+            LoadPlayers();
+            this.KeyPreview = true; // Дозволяє обробляти натискання клавіш для всієї форми
+            this.KeyDown += PlayerManagementForm_KeyDown; // Додаємо обробник для клавіш
+        }
+
+        private void LoadPlayers()
+        {
+            lstPlayers.Items.Clear();
+            if (File.Exists("accounts.txt"))
+            {
+                var accounts = File.ReadAllLines("accounts.txt");
+                foreach (var account in accounts)
+                {
+                    var parts = account.Split(',');
+                    if (parts.Length > 0)
+                    {
+                        lstPlayers.Items.Add(parts[0]); // Додаємо email гравця
+                    }
+                }
+            }
+        }
+
+        private void btnDeletePlayer_Click(object sender, EventArgs e)
+        {
+            if (lstPlayers.SelectedItem != null)
+            {
+                string selectedPlayerName = lstPlayers.SelectedItem.ToString();
+
+                // Отримуємо email гравця з accounts.txt
+                var accounts = File.ReadAllLines("accounts.txt");
+                string? emailToDelete = accounts
+                    .Select(line => line.Split(','))
+                    .FirstOrDefault(parts => parts[0] == selectedPlayerName)?
+                    .ElementAtOrDefault(1);
+
+                if (!string.IsNullOrEmpty(emailToDelete))
+                {
+                    DataManager.RemoveUser(emailToDelete); // Видалення користувача і його статистики
+                    MessageBox.Show("Гравця та його статистику успішно видалено!", "Інформація", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadPlayers(); // Оновлення списку гравців
+                }
+                else
+                {
+                    MessageBox.Show("Не вдалося знайти email для видалення.", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Будь ласка, виберіть гравця для видалення.", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void PlayerManagementForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                btnClose_Click(sender, e); // Виклик функції для кнопки "Закрити"
+            }
+        }
+    }
+}
+
+PlayerManagementForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class PlayerManagementForm
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            this.lstPlayers = new System.Windows.Forms.ListBox();
+            this.btnDeletePlayer = new System.Windows.Forms.Button();
+            this.btnClose = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // lstPlayers
+            // 
+            this.lstPlayers.FormattingEnabled = true;
+            this.lstPlayers.ItemHeight = 20;
+            this.lstPlayers.Location = new System.Drawing.Point(50, 30);
+            this.lstPlayers.Name = "lstPlayers";
+            this.lstPlayers.Size = new System.Drawing.Size(300, 200);
+            this.lstPlayers.TabIndex = 0;
+            // 
+            // btnDeletePlayer
+            // 
+            this.btnDeletePlayer.BackColor = System.Drawing.Color.Crimson;
+            this.btnDeletePlayer.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnDeletePlayer.ForeColor = System.Drawing.Color.White;
+            this.btnDeletePlayer.Location = new System.Drawing.Point(50, 250);
+            this.btnDeletePlayer.Name = "btnDeletePlayer";
+            this.btnDeletePlayer.Size = new System.Drawing.Size(150, 50);
+            this.btnDeletePlayer.TabIndex = 1;
+            this.btnDeletePlayer.Text = "Видалити";
+            this.btnDeletePlayer.UseVisualStyleBackColor = false;
+            this.btnDeletePlayer.Click += new System.EventHandler(this.btnDeletePlayer_Click);
+            // 
+            // btnClose
+            // 
+            this.btnClose.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.btnClose.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnClose.ForeColor = System.Drawing.Color.White;
+            this.btnClose.Location = new System.Drawing.Point(220, 250);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(130, 50);
+            this.btnClose.TabIndex = 2;
+            this.btnClose.Text = "Закрити";
+            this.btnClose.UseVisualStyleBackColor = false;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            // 
+            // PlayerManagementForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(400, 350);
+            this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.btnDeletePlayer);
+            this.Controls.Add(this.lstPlayers);
+            this.Name = "PlayerManagementForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Управління гравцями";
+            this.ResumeLayout(false);
+        }
+
+        private System.Windows.Forms.ListBox lstPlayers;
+        private System.Windows.Forms.Button btnDeletePlayer;
+        private System.Windows.Forms.Button btnClose;
+    }
+}
+
+Program.cs --- 
+
+using System;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    internal static class Program
+    {
+        /// <summary>
+        /// Головна точка входу для програми.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
+        }
+    }
+}
+
+StatisticsForm.cs --- 
+
+using System;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class StatisticsForm : Form
+    {
+        private readonly string userEmail;
+
+        public StatisticsForm(string email)
+        {
+            InitializeComponent();
+            userEmail = email ?? throw new ArgumentNullException(nameof(email));
+        }
+
+        private void StatisticsForm_Load(object sender, EventArgs e)
+        {
+            LoadStatistics();
+        }
+
+        private void LoadStatistics()
+        {
+            try
+            {
+                lstStatistics.Items.Clear();
+                string statisticsFilePath = Path.Combine("statistics", $"{userEmail}.statistic.txt");
+
+                if (File.Exists(statisticsFilePath))
+                {
+                    string[] lines = File.ReadAllLines(statisticsFilePath);
+
+                    if (lines.Any())
+                    {
+                        lstStatistics.Items.AddRange(lines);
+                    }
+                    else
+                    {
+                        lstStatistics.Items.Add("Немає записів у статистиці.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Файл статистики не знайдено!", "Інформація", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження статистики: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnClearStatistics_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DataManager.ClearStatistics(userEmail);
+                lstStatistics.Items.Clear();
+                MessageBox.Show("Статистика успішно очищена!", "Інформація", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка очищення статистики: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnClearSelectedStat_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (lstStatistics.SelectedItem != null)
+                {
+                    string selectedStat = lstStatistics.SelectedItem.ToString();
+                    string statisticsFilePath = Path.Combine("statistics", $"{userEmail}.statistic.txt");
+
+                    var lines = File.ReadAllLines(statisticsFilePath).ToList();
+                    lines.Remove(selectedStat);
+                    File.WriteAllLines(statisticsFilePath, lines);
+
+                    MessageBox.Show("Обраний запис видалено!", "Інформація", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadStatistics();
+                }
+                else
+                {
+                    MessageBox.Show("Оберіть запис для видалення!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка видалення запису: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}
+
+StatisticsForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class StatisticsForm
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        private void InitializeComponent()
+        {
+            this.lstStatistics = new System.Windows.Forms.ListBox();
+            this.btnClearStatistics = new System.Windows.Forms.Button();
+            this.btnClearSelectedStat = new System.Windows.Forms.Button();
+            this.btnClose = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // lstStatistics
+            // 
+            this.lstStatistics.FormattingEnabled = true;
+            this.lstStatistics.HorizontalScrollbar = true;
+            this.lstStatistics.ItemHeight = 16;
+            this.lstStatistics.Location = new System.Drawing.Point(12, 12);
+            this.lstStatistics.Name = "lstStatistics";
+            this.lstStatistics.Size = new System.Drawing.Size(560, 324);
+            this.lstStatistics.TabIndex = 0;
+            // 
+            // btnClearStatistics
+            // 
+            this.btnClearStatistics.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.btnClearStatistics.ForeColor = System.Drawing.Color.White;
+            this.btnClearStatistics.Location = new System.Drawing.Point(12, 350);
+            this.btnClearStatistics.Name = "btnClearStatistics";
+            this.btnClearStatistics.Size = new System.Drawing.Size(150, 40);
+            this.btnClearStatistics.TabIndex = 1;
+            this.btnClearStatistics.Text = "Очистити всю статистику";
+            this.btnClearStatistics.UseVisualStyleBackColor = false;
+            this.btnClearStatistics.Click += new System.EventHandler(this.btnClearStatistics_Click);
+            // 
+            // btnClearSelectedStat
+            // 
+            this.btnClearSelectedStat.BackColor = System.Drawing.Color.MediumPurple;
+            this.btnClearSelectedStat.ForeColor = System.Drawing.Color.White;
+            this.btnClearSelectedStat.Location = new System.Drawing.Point(218, 350);
+            this.btnClearSelectedStat.Name = "btnClearSelectedStat";
+            this.btnClearSelectedStat.Size = new System.Drawing.Size(150, 40);
+            this.btnClearSelectedStat.TabIndex = 2;
+            this.btnClearSelectedStat.Text = "Очистити обране";
+            this.btnClearSelectedStat.UseVisualStyleBackColor = false;
+            this.btnClearSelectedStat.Click += new System.EventHandler(this.btnClearSelectedStat_Click);
+            // 
+            // btnClose
+            // 
+            this.btnClose.BackColor = System.Drawing.Color.Crimson;
+            this.btnClose.ForeColor = System.Drawing.Color.White;
+            this.btnClose.Location = new System.Drawing.Point(422, 350);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(150, 40);
+            this.btnClose.TabIndex = 3;
+            this.btnClose.Text = "Закрити";
+            this.btnClose.UseVisualStyleBackColor = false;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            // 
+            // StatisticsForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(584, 402);
+            this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.btnClearSelectedStat);
+            this.Controls.Add(this.btnClearStatistics);
+            this.Controls.Add(this.lstStatistics);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "StatisticsForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Статистика";
+            this.Load += new System.EventHandler(this.StatisticsForm_Load);
+            this.ResumeLayout(false);
+        }
+
+        #endregion
+
+        private System.Windows.Forms.ListBox lstStatistics;
+        private System.Windows.Forms.Button btnClearStatistics;
+        private System.Windows.Forms.Button btnClearSelectedStat;
+        private System.Windows.Forms.Button btnClose;
+    }
+}
+
+UserLoginForm.cs --- 
+
+using System;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class UserLoginForm : Form
+    {
+        public string UserEmail { get; private set; }
+        public string UserPassword { get; private set; }
+
+        public UserLoginForm()
+        {
+            InitializeComponent();
+            this.KeyPreview = true; // Дозволяє обробляти натискання клавіш для всієї форми
+            this.KeyDown += UserLoginForm_KeyDown; // Додаємо обробник для клавіш
+            this.txtPassword.KeyDown += new KeyEventHandler(txtPassword_KeyDown); // Додаємо обробник для TextBox
+        }
+
+        private bool ValidateUser(string email, string password)
+        {
+            if (!File.Exists("accounts.txt"))
+            {
+                MessageBox.Show("Файл accounts.txt не знайдено!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            var accounts = File.ReadAllLines("accounts.txt");
+            bool emailFound = false;
+
+            foreach (var account in accounts)
+            {
+                var parts = account.Split(',');
+                if (parts.Length == 3 && parts[1].Equals(email, StringComparison.OrdinalIgnoreCase))
+                {
+                    emailFound = true;
+                    if (parts[2] == password)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Невірний пароль!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return false;
+                    }
+                }
+            }
+
+            if (!emailFound)
+            {
+                MessageBox.Show("Користувача з таким email не знайдено!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return false;
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            string email = txtEmail.Text.Trim();
+            string password = txtPassword.Text.Trim();
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show("Будь ласка, заповніть усі поля!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Перевірка формату email
+            if (!Regex.IsMatch(email, @"^[a-zA-Z0-9]+@[a-zA-Z]+\.[a-zA-Z]{2,}$"))
+            {
+                MessageBox.Show("Невірний формат email!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!ValidateUser(email, password))
+            {
+                return;
+            }
+
+            // Якщо користувач існує, закриваємо форму з позитивним результатом
+            UserEmail = email;
+            this.DialogResult = DialogResult.OK;
+            this.Close();
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
+        }
+
+        private void UserLoginForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnLogin.PerformClick(); // Виклик функції входу
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                btnCancel.PerformClick(); // Виклик функції скасування
+            }
+        }
+
+        private void txtPassword_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnLogin.PerformClick(); // Виклик функції входу
+            }
+        }
+    }
+}
+
+UserLoginForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class UserLoginForm
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            this.txtEmail = new System.Windows.Forms.TextBox();
+            this.txtPassword = new System.Windows.Forms.TextBox();
+            this.btnLogin = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.lblEmail = new System.Windows.Forms.Label();
+            this.lblPassword = new System.Windows.Forms.Label();
+            this.SuspendLayout();
+            // 
+            // txtEmail
+            // 
+            this.txtEmail.Location = new System.Drawing.Point(120, 30);
+            this.txtEmail.Name = "txtEmail";
+            this.txtEmail.Size = new System.Drawing.Size(250, 27);
+            this.txtEmail.TabIndex = 0;
+            // 
+            // txtPassword
+            // 
+            this.txtPassword.Location = new System.Drawing.Point(120, 80);
+            this.txtPassword.Name = "txtPassword";
+            this.txtPassword.PasswordChar = '*';
+            this.txtPassword.Size = new System.Drawing.Size(250, 27);
+            this.txtPassword.TabIndex = 1;
+            // 
+            // btnLogin
+            // 
+            this.btnLogin.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.btnLogin.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnLogin.ForeColor = System.Drawing.Color.White;
+            this.btnLogin.Location = new System.Drawing.Point(50, 140);
+            this.btnLogin.Name = "btnLogin";
+            this.btnLogin.Size = new System.Drawing.Size(150, 50);
+            this.btnLogin.TabIndex = 2;
+            this.btnLogin.Text = "Увійти";
+            this.btnLogin.UseVisualStyleBackColor = false;
+            this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.BackColor = System.Drawing.Color.Crimson;
+            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnCancel.ForeColor = System.Drawing.Color.White;
+            this.btnCancel.Location = new System.Drawing.Point(220, 140);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(150, 50);
+            this.btnCancel.TabIndex = 3;
+            this.btnCancel.Text = "Скасувати";
+            this.btnCancel.UseVisualStyleBackColor = false;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // lblEmail
+            // 
+            this.lblEmail.AutoSize = true;
+            this.lblEmail.Location = new System.Drawing.Point(50, 35);
+            this.lblEmail.Name = "lblEmail";
+            this.lblEmail.Size = new System.Drawing.Size(50, 20);
+            this.lblEmail.TabIndex = 4;
+            this.lblEmail.Text = "Email:";
+            // 
+            // lblPassword
+            // 
+            this.lblPassword.AutoSize = true;
+            this.lblPassword.Location = new System.Drawing.Point(50, 85);
+            this.lblPassword.Name = "lblPassword";
+            this.lblPassword.Size = new System.Drawing.Size(63, 20);
+            this.lblPassword.TabIndex = 5;
+            this.lblPassword.Text = "Пароль:";
+            // 
+            // UserLoginForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(400, 220);
+            this.Controls.Add(this.lblPassword);
+            this.Controls.Add(this.lblEmail);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnLogin);
+            this.Controls.Add(this.txtPassword);
+            this.Controls.Add(this.txtEmail);
+            this.Name = "UserLoginForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Вхід користувача";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        private System.Windows.Forms.TextBox txtEmail;
+        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.Button btnLogin;
+        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Label lblEmail;
+        private System.Windows.Forms.Label lblPassword;
+    }
+}
+
+UserMenuForm.cs --- 
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class UserMenuForm : Form
+    {
+        private string userEmail;
+
+        public UserMenuForm(string email)
+        {
+            InitializeComponent();
+            userEmail = email;
+            SetBackgroundImage();
+        }
+
+        private void SetBackgroundImage()
+        {
+            try
+            {
+                this.BackgroundImage = Image.FromFile("Resources/player_menu.jpg");
+                this.BackgroundImageLayout = ImageLayout.Stretch;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження фону: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnPlayWithComputer_Click(object sender, EventArgs e)
+        {
+            GameWithComputerForm gameWithComputer = new GameWithComputerForm(userEmail);
+            gameWithComputer.ShowDialog();
+        }
+
+        private void btnPlayWithPlayer_Click(object sender, EventArgs e)
+        {
+            GameWithPlayerForm gameWithPlayer = new GameWithPlayerForm(userEmail);
+            gameWithPlayer.ShowDialog();
+        }
+
+        private void btnViewStatistics_Click(object sender, EventArgs e)
+        {
+            StatisticsForm statistics = new StatisticsForm(userEmail);
+            statistics.ShowDialog();
+        }
+
+        private void btnLogout_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btnChangeUserData_Click(object sender, EventArgs e)
+        {
+            ChangeUserCredentialsForm changeForm = new ChangeUserCredentialsForm(userEmail);
+            if (changeForm.ShowDialog() == DialogResult.OK)
+            {
+                MessageBox.Show("Дані успішно змінено!", "Інформація", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+    }
+}
+
+UserMenuForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class UserMenuForm
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            this.btnPlayWithComputer = new System.Windows.Forms.Button();
+            this.btnPlayWithPlayer = new System.Windows.Forms.Button();
+            this.btnViewStatistics = new System.Windows.Forms.Button();
+            this.btnLogout = new System.Windows.Forms.Button();
+            this.btnChangeUserData = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // btnPlayWithComputer
+            // 
+            this.btnPlayWithComputer.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.btnPlayWithComputer.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnPlayWithComputer.ForeColor = System.Drawing.Color.White;
+            this.btnPlayWithComputer.Location = new System.Drawing.Point(100, 50);
+            this.btnPlayWithComputer.Name = "btnPlayWithComputer";
+            this.btnPlayWithComputer.Size = new System.Drawing.Size(200, 50);
+            this.btnPlayWithComputer.TabIndex = 0;
+            this.btnPlayWithComputer.Text = "Грати з комп'ютером";
+            this.btnPlayWithComputer.UseVisualStyleBackColor = false;
+            this.btnPlayWithComputer.Click += new System.EventHandler(this.btnPlayWithComputer_Click);
+            // 
+            // btnPlayWithPlayer
+            // 
+            this.btnPlayWithPlayer.BackColor = System.Drawing.Color.MediumPurple;
+            this.btnPlayWithPlayer.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnPlayWithPlayer.ForeColor = System.Drawing.Color.White;
+            this.btnPlayWithPlayer.Location = new System.Drawing.Point(100, 120);
+            this.btnPlayWithPlayer.Name = "btnPlayWithPlayer";
+            this.btnPlayWithPlayer.Size = new System.Drawing.Size(200, 50);
+            this.btnPlayWithPlayer.TabIndex = 1;
+            this.btnPlayWithPlayer.Text = "Грати з гравцем";
+            this.btnPlayWithPlayer.UseVisualStyleBackColor = false;
+            this.btnPlayWithPlayer.Click += new System.EventHandler(this.btnPlayWithPlayer_Click);
+            // 
+            // btnViewStatistics
+            // 
+            this.btnViewStatistics.BackColor = System.Drawing.Color.SteelBlue;
+            this.btnViewStatistics.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnViewStatistics.ForeColor = System.Drawing.Color.White;
+            this.btnViewStatistics.Location = new System.Drawing.Point(100, 190);
+            this.btnViewStatistics.Name = "btnViewStatistics";
+            this.btnViewStatistics.Size = new System.Drawing.Size(200, 50);
+            this.btnViewStatistics.TabIndex = 2;
+            this.btnViewStatistics.Text = "Статистика";
+            this.btnViewStatistics.UseVisualStyleBackColor = false;
+            this.btnViewStatistics.Click += new System.EventHandler(this.btnViewStatistics_Click);
+            // 
+            // btnChangeUserData
+            // 
+            this.btnChangeUserData.BackColor = System.Drawing.Color.Teal;
+            this.btnChangeUserData.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnChangeUserData.ForeColor = System.Drawing.Color.White;
+            this.btnChangeUserData.Location = new System.Drawing.Point(100, 260);
+            this.btnChangeUserData.Name = "btnChangeUserData";
+            this.btnChangeUserData.Size = new System.Drawing.Size(200, 50);
+            this.btnChangeUserData.TabIndex = 4;
+            this.btnChangeUserData.Text = "Змінити дані";
+            this.btnChangeUserData.UseVisualStyleBackColor = false;
+            this.btnChangeUserData.Click += new System.EventHandler(this.btnChangeUserData_Click);
+            // 
+            // btnLogout
+            // 
+            this.btnLogout.BackColor = System.Drawing.Color.Crimson;
+            this.btnLogout.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnLogout.ForeColor = System.Drawing.Color.White;
+            this.btnLogout.Location = new System.Drawing.Point(100, 330);
+            this.btnLogout.Name = "btnLogout";
+            this.btnLogout.Size = new System.Drawing.Size(200, 50);
+            this.btnLogout.TabIndex = 3;
+            this.btnLogout.Text = "Вийти";
+            this.btnLogout.UseVisualStyleBackColor = false;
+            this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
+            // 
+            // UserMenuForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(400, 450);
+            this.Controls.Add(this.btnLogout);
+            this.Controls.Add(this.btnChangeUserData);
+            this.Controls.Add(this.btnViewStatistics);
+            this.Controls.Add(this.btnPlayWithPlayer);
+            this.Controls.Add(this.btnPlayWithComputer);
+            this.Name = "UserMenuForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Меню гравця";
+            this.ResumeLayout(false);
+        }
+
+        private System.Windows.Forms.Button btnPlayWithComputer;
+        private System.Windows.Forms.Button btnPlayWithPlayer;
+        private System.Windows.Forms.Button btnViewStatistics;
+        private System.Windows.Forms.Button btnLogout;
+        private System.Windows.Forms.Button btnChangeUserData;
+    }
+}
+
+UserOptionForm.cs --- 
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class UserOptionForm : Form
+    {
+        public bool IsLoginSelected { get; private set; } = false;
+
+        public UserOptionForm()
+        {
+            InitializeComponent();
+            SetBackgroundImage();
+        }
+
+        private void SetBackgroundImage()
+        {
+            try
+            {
+                this.BackgroundImage = Image.FromFile("Resources/player_menu.jpg");
+                this.BackgroundImageLayout = ImageLayout.Stretch;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження фону: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            IsLoginSelected = true;
+            this.DialogResult = DialogResult.OK;
+            this.Close();
+        }
+
+        private void btnRegister_Click(object sender, EventArgs e)
+        {
+            IsLoginSelected = false;
+            this.DialogResult = DialogResult.OK;
+            this.Close();
+        }
+    }
+}
+
+UserOptionForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class UserOptionForm
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            btnLogin = new Button();
+            btnRegister = new Button();
+            SuspendLayout();
+            // 
+            // btnLogin
+            // 
+            btnLogin.BackColor = Color.LightSkyBlue;
+            btnLogin.Font = new Font("Segoe UI", 12F);
+            btnLogin.ForeColor = Color.DarkBlue;
+            btnLogin.Location = new Point(52, 38);
+            btnLogin.Name = "btnLogin";
+            btnLogin.Size = new Size(200, 50);
+            btnLogin.TabIndex = 0;
+            btnLogin.Text = "Увійти";
+            btnLogin.UseVisualStyleBackColor = false;
+            btnLogin.Click += btnLogin_Click;
+            // 
+            // btnRegister
+            // 
+            btnRegister.BackColor = Color.LightCoral;
+            btnRegister.Font = new Font("Segoe UI", 12F);
+            btnRegister.ForeColor = Color.Maroon;
+            btnRegister.Location = new Point(52, 148);
+            btnRegister.Name = "btnRegister";
+            btnRegister.Size = new Size(200, 50);
+            btnRegister.TabIndex = 1;
+            btnRegister.Text = "Створити";
+            btnRegister.UseVisualStyleBackColor = false;
+            btnRegister.Click += btnRegister_Click;
+            // 
+            // UserOptionForm
+            // 
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(300, 237);
+            Controls.Add(btnRegister);
+            Controls.Add(btnLogin);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "UserOptionForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Меню користувача";
+            ResumeLayout(false);
+        }
+
+        private System.Windows.Forms.Button btnLogin;
+        private System.Windows.Forms.Button btnRegister;
+    }
+}
+
+UserRegistrationForm.cs --- 
+
+using System;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+
+namespace RockPaperScissorsGame
+{
+    public partial class UserRegistrationForm : Form
+    {
+        public UserRegistrationForm()
+        {
+            InitializeComponent();
+            this.KeyPreview = true; // Дозволяє перехоплювати натискання клавіш на рівні форми
+            this.KeyDown += UserRegistrationForm_KeyDown; // Додаємо обробник подій клавіш
+        }
+
+        private void btnRegister_Click(object sender, EventArgs e)
+        {
+            string name = txtName.Text.Trim();
+            string email = txtEmail.Text.Trim();
+            string password = txtPassword.Text;
+
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                MessageBox.Show("Будь ласка, заповніть всі поля!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!Regex.IsMatch(email, @"^[a-zA-Z0-9]+@[a-zA-Z]+\.[a-zA-Z]{2,}$"))
+            {
+                MessageBox.Show("Введено некоректний email!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (UserExists(email))
+            {
+                MessageBox.Show("Користувач з таким email вже існує!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (DataManager.AddUser(name, email, password))
+            {
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Сталася помилка при реєстрації користувача!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
+        }
+
+        private bool UserExists(string email)
+        {
+            if (!File.Exists("accounts.txt"))
+            {
+                return false;
+            }
+
+            var accounts = File.ReadAllLines("accounts.txt");
+            foreach (var account in accounts)
+            {
+                var parts = account.Split(',');
+                if (parts.Length >= 2 && parts[1].Equals(email, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void UserRegistrationForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnRegister.PerformClick(); // Емуляція натискання кнопки "Реєстрація"
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                btnCancel.PerformClick(); // Емуляція натискання кнопки "Скасувати"
+            }
+        }
+    }
+}
+
+UserRegistrationForm.Designer.cs --- 
+
+namespace RockPaperScissorsGame
+{
+    partial class UserRegistrationForm
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            this.txtName = new System.Windows.Forms.TextBox();
+            this.txtEmail = new System.Windows.Forms.TextBox();
+            this.txtPassword = new System.Windows.Forms.TextBox();
+            this.btnRegister = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.lblName = new System.Windows.Forms.Label();
+            this.lblEmail = new System.Windows.Forms.Label();
+            this.lblPassword = new System.Windows.Forms.Label();
+            this.SuspendLayout();
+            // 
+            // txtName
+            // 
+            this.txtName.Location = new System.Drawing.Point(150, 30);
+            this.txtName.Name = "txtName";
+            this.txtName.Size = new System.Drawing.Size(250, 27);
+            this.txtName.TabIndex = 0;
+            // 
+            // txtEmail
+            // 
+            this.txtEmail.Location = new System.Drawing.Point(150, 80);
+            this.txtEmail.Name = "txtEmail";
+            this.txtEmail.Size = new System.Drawing.Size(250, 27);
+            this.txtEmail.TabIndex = 1;
+            // 
+            // txtPassword
+            // 
+            this.txtPassword.Location = new System.Drawing.Point(150, 130);
+            this.txtPassword.Name = "txtPassword";
+            this.txtPassword.PasswordChar = '*';
+            this.txtPassword.Size = new System.Drawing.Size(250, 27);
+            this.txtPassword.TabIndex = 2;
+            // 
+            // btnRegister
+            // 
+            this.btnRegister.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.btnRegister.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnRegister.ForeColor = System.Drawing.Color.White;
+            this.btnRegister.Location = new System.Drawing.Point(50, 190);
+            this.btnRegister.Name = "btnRegister";
+            this.btnRegister.Size = new System.Drawing.Size(150, 50);
+            this.btnRegister.TabIndex = 3;
+            this.btnRegister.Text = "Реєстрація";
+            this.btnRegister.UseVisualStyleBackColor = false;
+            this.btnRegister.Click += new System.EventHandler(this.btnRegister_Click);
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.BackColor = System.Drawing.Color.Crimson;
+            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.btnCancel.ForeColor = System.Drawing.Color.White;
+            this.btnCancel.Location = new System.Drawing.Point(250, 190);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(150, 50);
+            this.btnCancel.TabIndex = 4;
+            this.btnCancel.Text = "Скасувати";
+            this.btnCancel.UseVisualStyleBackColor = false;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // lblName
+            // 
+            this.lblName.AutoSize = true;
+            this.lblName.Location = new System.Drawing.Point(50, 35);
+            this.lblName.Name = "lblName";
+            this.lblName.Size = new System.Drawing.Size(40, 20);
+            this.lblName.TabIndex = 5;
+            this.lblName.Text = "Ім'я:";
+            // 
+            // lblEmail
+            // 
+            this.lblEmail.AutoSize = true;
+            this.lblEmail.Location = new System.Drawing.Point(50, 85);
+            this.lblEmail.Name = "lblEmail";
+            this.lblEmail.Size = new System.Drawing.Size(50, 20);
+            this.lblEmail.TabIndex = 6;
+            this.lblEmail.Text = "Email:";
+            // 
+            // lblPassword
+            // 
+            this.lblPassword.AutoSize = true;
+            this.lblPassword.Location = new System.Drawing.Point(50, 135);
+            this.lblPassword.Name = "lblPassword";
+            this.lblPassword.Size = new System.Drawing.Size(63, 20);
+            this.lblPassword.TabIndex = 7;
+            this.lblPassword.Text = "Пароль:";
+            // 
+            // UserRegistrationForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(450, 270);
+            this.Controls.Add(this.lblPassword);
+            this.Controls.Add(this.lblEmail);
+            this.Controls.Add(this.lblName);
+            this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnRegister);
+            this.Controls.Add(this.txtPassword);
+            this.Controls.Add(this.txtEmail);
+            this.Controls.Add(this.txtName);
+            this.Name = "UserRegistrationForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Реєстрація користувача";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        private System.Windows.Forms.TextBox txtName;
+        private System.Windows.Forms.TextBox txtEmail;
+        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.Button btnRegister;
+        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Label lblName;
+        private System.Windows.Forms.Label lblEmail;
+        private System.Windows.Forms.Label lblPassword;
+    }
+}

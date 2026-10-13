@@ -1,0 +1,22 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+/* світлий приємний градієнт */
+.bg-gradient-calm {
+  background: linear-gradient(135deg, #627fae 0%, #415b80 50%, #2f3f55 100%) !important;
+}
+
+/* м’який світлий текст для темного/насиченого фону */
+.text-on-dark {
+  color: #e5e7eb !important;
+}

@@ -1,0 +1,143 @@
+Опис:
+
+Products
+ProductId (PK, int) – унікальний ідентифікатор продукту
+Name (nvarchar) – назва продукту
+Description (nvarchar) – опис продукту
+CategoryId (FK, int) – зв'язок із таблицею Categories
+SupplierId (FK, int) – зв'язок із таблицею Suppliers
+Price (money) – ціна продукту
+IsNew (bit) – позначка, чи продукт новий
+IsTaxed (bit) – позначка, чи продукт оподатковується
+StockQuantity (int) – кількість на складі
+
+Categories
+CategoryId (PK, int) – унікальний ідентифікатор категорії
+CategoryName (nvarchar) – назва категорії
+
+Suppliers
+SupplierId (PK, int) – унікальний ідентифікатор постачальника
+SupplierName (nvarchar) – назва постачальника
+ContactInfo (nvarchar) – контактна інформація
+
+Customers
+CustomerId (PK, int) – унікальний ідентифікатор клієнта
+FullName (nvarchar) – повне ім'я клієнта
+PhoneNumber (nvarchar) – номер телефону клієнта
+Email (nvarchar) – електронна пошта
+Address (nvarchar) – адреса клієнта
+
+Orders
+OrderId (PK, int) – унікальний ідентифікатор замовлення
+CustomerId (FK, int) – зв'язок із таблицею Customers
+OrderDate (datetime) – дата замовлення
+TotalAmount (money) – загальна сума замовлення
+
+OrderItems
+OrderItemId (PK, int) – унікальний ідентифікатор для товару в замовленні
+OrderId (FK, int) – зв'язок із таблицею Orders
+ProductId (FK, int) – зв'язок із таблицею Products
+Quantity (int) – кількість одиниць продукту
+UnitPrice (money) – ціна за одиницю
+
+Reviews
+ReviewId (PK, int) – унікальний ідентифікатор відгуку
+ProductId (FK, int) – зв'язок із таблицею Products
+CustomerId (FK, int) – зв'язок із таблицею Customers
+ReviewText (nvarchar) – текст відгуку
+Rating (int) – оцінка продукту (1-5)
+ReviewDate (datetime) – дата відгуку
+
+ReviewHistory
+HistoryId (PK, int) – унікальний ідентифікатор запису історії
+ReviewId (int) – ідентифікатор відгуку, який змінено
+ProductId (int) – ідентифікатор продукту, до якого належить відгук
+CustomerId (int) – ідентифікатор клієнта, який залишив відгук
+ReviewText (nvarchar) – текст відгуку до зміни
+Rating (int) – оцінка продукту до зміни
+ReviewDate (datetime) – дата створення відгуку
+ModifiedDate (datetime) – дата зміни відгуку
+
+Discounts
+DiscountId (PK, int) – унікальний ідентифікатор знижки
+ProductId (FK, int) – зв'язок із таблицею Products
+DiscountPercentage (decimal) – відсоток знижки
+StartDate (datetime) – дата початку знижки
+EndDate (datetime) – дата завершення знижки
+
+Inventory
+InventoryId (PK, int) – унікальний ідентифікатор для запису запасу
+ProductId (FK, int) – зв'язок із таблицею Products
+QuantityAvailable (int) – кількість доступного товару
+ReorderThreshold (int) – поріг для переупорядкування
+
+ProductAttributes
+AttributeId (PK, int) – унікальний ідентифікатор атрибуту
+ProductId (FK, int) – зв'язок із таблицею Products
+AttributeName (nvarchar) – назва атрибуту (наприклад, колір, розмір)
+AttributeValue (nvarchar) – значення атрибуту
+
+PaymentMethods
+PaymentMethodId (PK, int) – унікальний ідентифікатор способу оплати
+MethodName (nvarchar) – назва способу оплати (наприклад, кредитна картка, PayPal)
+
+OrderPayments
+PaymentId (PK, int) – унікальний ідентифікатор платежу
+OrderId (FK, int) – зв'язок із таблицею Orders
+PaymentMethodId (FK, int) – зв'язок із таблицею PaymentMethods
+PaymentDate (datetime) – дата платежу
+AmountPaid (money) – сума платежу
+
+Shipping
+ShippingId (PK, int) – унікальний ідентифікатор доставки
+OrderId (FK, int) – зв'язок із таблицею Orders
+ShippingDate (datetime) – дата відправлення
+DeliveryDate (datetime) – дата доставки
+ShippingStatus (nvarchar) – статус доставки
+ShippingAddress (nvarchar) – адреса доставки
+
+WishList
+WishListId (PK, int) – унікальний ідентифікатор запису списку бажань
+CustomerId (FK, int) – зв'язок із таблицею Customers
+ProductId (FK, int) – зв'язок із таблицею Products
+DateAdded (datetime) – дата додавання в список бажань
+
+Users
+UserId (PK, int) – унікальний ідентифікатор користувача
+Username (nvarchar) – ім'я користувача
+PasswordHash (nvarchar) – хешований пароль
+Role (nvarchar) – роль користувача (наприклад, адмін чи користувач)
+
+CartItems
+CartItemId (PK, int) – унікальний ідентифікатор запису корзини
+CustomerId (FK, int) – зв'язок із таблицею Customers
+ProductId (FK, int) – зв'язок із таблицею Products
+Quantity (int) – кількість товару в корзині
+DateAdded (datetime) – дата додавання до корзини
+
+Notifications
+NotificationId (PK, int) – унікальний ідентифікатор повідомлення
+Message (nvarchar) – текст повідомлення
+NotificationDate (datetime) – дата створення повідомлення
+
+Зв’язки між таблицями:
+Products → Categories за CategoryId
+Products → Suppliers за SupplierId
+Orders → Customers за CustomerId
+OrderItems → Orders за OrderId
+OrderItems → Products за ProductId
+Reviews → Products за ProductId
+Reviews → Customers за CustomerId
+ReviewHistory → Reviews за ReviewId
+ReviewHistory → Products за ProductId
+ReviewHistory → Customers за CustomerId
+Discounts → Products за ProductId
+Inventory → Products за ProductId
+ProductAttributes → Products за ProductId
+OrderPayments → Orders за OrderId
+OrderPayments → PaymentMethods за PaymentMethodId
+Shipping → Orders за OrderId
+WishList → Customers за CustomerId
+WishList → Products за ProductId
+CartItems → Customers за CustomerId
+CartItems → Products за ProductId

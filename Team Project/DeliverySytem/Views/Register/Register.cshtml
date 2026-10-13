@@ -1,0 +1,61 @@
+﻿@model DeliverySytem.Models.Customer
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h4>Register</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Register">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>  
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CountryKey" class="control-label">Country</label>
+                <select asp-for="CountryKey" class="form-control" id="countrySelect"
+                        asp-items="ViewBag.Countries">
+                    <option value="">-- Select Country --</option>
+                </select>
+                <span asp-validation-for="CountryKey" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CityKey" class="control-label">City</label>
+                <select asp-for="CityKey" class="form-control" id="citySelect"
+                        asp-items="ViewBag.Cities">
+                    >
+                    <option value="">-- Select City --</option>
+                </select>
+                <span asp-validation-for="CityKey" class="text-danger"></span>
+            </div>
+            <div class="form-group m-2">
+                <input type="submit" value="Register" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Login">Already have an account?</a>
+</div>
+
+<script>
+     
+</script>

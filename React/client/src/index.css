@@ -1,0 +1,63 @@
+/* index.css — світлий фон + дуже легка сітка, без зміни логіки компонентів */
+:root {
+  --brand-from: 109, 40, 217;
+  /* violet-700 */
+  --brand-mid: 79, 70, 229;
+  /* indigo-600 */
+  --brand-to: 16, 185, 129;
+  /* emerald-500 */
+  --paper: 255, 255, 255;
+  /* біла картка */
+  --ink: 15, 23, 42;
+  /* темний текст */
+  --muted: 100, 116, 139;
+  /* сірий текст */
+  --ring: 226, 232, 240;
+  /* бліда межа */
+  --header-fg: 255, 255, 255;
+  /* колір тексту в хедері */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  color: #0f172a;
+  /* темний текст на світлому тлі */
+  background-attachment: fixed;
+  /* Багатошаровий, але дуже делікатний фон */
+  background-image:
+    radial-gradient(1200px 800px at -10% -20%, rgba(99, 102, 241, 0.18), rgba(255, 255, 255, 0) 60%),
+    radial-gradient(1000px 800px at 110% 120%, rgba(244, 114, 182, 0.18), rgba(255, 255, 255, 0) 60%),
+    radial-gradient(800px 600px at 20% 100%, rgba(16, 185, 129, 0.15), rgba(255, 255, 255, 0) 60%),
+    /* ледве помітна сітка 24px */
+    linear-gradient(to right, rgba(17, 24, 39, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(17, 24, 39, 0.04) 1px, transparent 1px),
+    /* базовий світлий колір */
+    linear-gradient(#ffffff, #ffffff);
+  background-size:
+    auto,
+    auto,
+    auto,
+    24px 24px,
+    24px 24px,
+    auto;
+}
+
+::selection {
+  background: rgba(99, 102, 241, 0.25);
+}

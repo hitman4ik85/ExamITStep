@@ -1,0 +1,6 @@
+@GalleryApi_HostAddress = http://192.168.0.225:5104
+
+GET {{GalleryApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

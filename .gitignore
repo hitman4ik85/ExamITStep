@@ -1,0 +1,43 @@
+
+# Visual Studio
+.vs/
+**/.vs/
+
+# .NET build output
+**/bin/
+**/obj/
+
+# Python virtual environments and cache
+**/.venv/
+**/venv/
+**/__pycache__/
+**/*.py[cod]
+
+# Node.js dependencies
+**/node_modules/
+
+# Build output
+**/dist/
+**/build/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Certificates and private keys
+*.pfx
+*.p12
+*.key
+
+# IDE and operating system files
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local credentials and sensitive configuration
+/SystemProgramWPF-C#/admin.txt
+/ASP.NET/HotelRoomReserved/HotelRoomReserved.API/appsettings.json
+/ReactNative/GalleryApi/GalleryApi/appsettings.json
+/SystemProgramWPF-C#/accounts.txt
+/SystemProgramWPF-C#/statistics/hitok@gmail.com.statistic.txt
